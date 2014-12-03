@@ -1,7 +1,7 @@
 URL Downloader
 ==============
 
-Given a plaintext file containing URLs, one per line, e.g.:
+Given a plaintext file containing URLs, one per line, e.g.::
 
     http://mywebserver.com/images/271947.jpg
     http://mywebserver.com/images/24174.jpg

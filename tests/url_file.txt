@@ -1,0 +1,5 @@
+http://host_which_does_not_exist.com/file_which_does_not_exist.jpg
+http://upload.wikimedia.org/wikipedia/commons/5/52/Angolian-Python.jpg
+http://upload.wikimedia.org/wikipedia/commons/a/a4/PythonCurtusRooij.jpg
+http://upload.wikimedia.org/wikipedia/commons/7/73/Doune_Castle_east_wall.jpg
+https://www.python.org/static/community_logos/python-logo-master-v3-TM-flattened.png
