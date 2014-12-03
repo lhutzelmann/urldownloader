@@ -42,17 +42,18 @@ class UrlDownloader(object):
         else:
             raise RuntimeError("Response status = %d" % stat)
 
+
 def main(files, encoding=DEFAULT_ENCODING):
     """ Main function of the script. Performs the actual work and can be called
     from other code directly.
 
     :param files: Sequence of file paths to the files that contain the URLs.
     :param encoding: Defines the encoding of the input files.
-    :return: None if everything went fine, else 1.
+    :return: True if everything went fine, False otherwise.
     """
     url_downloader = UrlDownloader()
 
-    exit_code = None
+    no_error = True
     for file_path in files:
         with codecs.open(file_path, encoding=encoding) as f:
             for url in f:
@@ -61,21 +62,22 @@ def main(files, encoding=DEFAULT_ENCODING):
                     url_downloader.download(url)
                 except Exception as e:
                     print "Error occurred: %s" % e
-                    exit_code = 1
-    return exit_code
+                    no_error = False
+    return no_error
 
 if __name__ == '__main__':
     # Set up argument parser for command line handling.
     parser = argparse.ArgumentParser(
         description='Download web content from URLs in files.')
-    parser.add_argument('file', metavar='FILE', nargs='+', dest='files',
+    parser.add_argument('files', metavar='FILE', nargs='+',
                         help='file which contains one URL per line')
     parser.add_argument('-e', '--encoding', default=DEFAULT_ENCODING,
-                        help=('set the encoding of the file (default=%s)' %
+                        help=('set the encoding of the file(s) (default=%s)' %
                               DEFAULT_ENCODING))
 
     # Get command line arguments as a dictionary.
     kwargs = vars(parser.parse_args())
 
-    exit_code = main(**kwargs)
+    no_error_occurred = main(**kwargs)
+    exit_code = None if no_error_occurred else 1
     sys.exit(exit_code)
