@@ -13,7 +13,9 @@ class UrlDownloader(object):
     """ Class to download a file from a given URL.
     """
     # Implemented as class for better extensibility.
-    def __extract_filename(self, text_url):
+    # TODO: forbid non http-URLs
+
+    def _extract_filename(self, text_url):
         """ Extracts the file name from the url.
         Requires the URL to contain the file name as last segment.
         Therefore no query parameters are allowed.
@@ -36,7 +38,7 @@ class UrlDownloader(object):
         stat = response.getcode()
 
         if stat == 200:
-            filename = self.__extract_filename(text_url)
+            filename = self._extract_filename(text_url)
             with open(filename, 'wb') as f:
                 f.write(response.read())
         else:

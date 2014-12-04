@@ -11,10 +11,15 @@ Given a plaintext file containing URLs, one per line, e.g.::
 
 URL Downloader takes this plaintext file as an argument and downloads all images, storing them on the local hard disk.
 
+Installation
+------------
+
+The software is not packaged at all, so no installation.
+
 Usage
 -----
 
-.. note:: The script requires Python 2.7 to run.
+.. note:: The script requires Python 2.7+ to run.
 
 Type the following to see all options::
 
@@ -25,6 +30,21 @@ The `tests` folder contains a file with example URLs (pointing to some freely do
 You can download them using the following command::
 
     python urldownloader/urldownloader.py tests/url_file.txt
+
+Run tests
+---------
+
+.. note:: The tests require mock 1.0.1 for http-server mocking
+
+You can run the tests as follows::
+
+    cd <project dir>
+    python -m unittest test_urldownloader
+
+If you get the following, misleading error, you may need to install mock::
+
+    AttributeError: 'module' object has no attribute 'test_urldownloader'
+
 
 Suggestions for improvement
 ---------------------------
