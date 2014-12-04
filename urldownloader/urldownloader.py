@@ -81,5 +81,7 @@ if __name__ == '__main__':
     kwargs = vars(parser.parse_args())
 
     no_error_occurred = main(**kwargs)
+
+    # set exit code depending on an occurred error
     exit_code = None if no_error_occurred else 1
     sys.exit(exit_code)
