@@ -51,7 +51,7 @@ Suggestions for improvement
 
 - an option to set a target folder
 - support parallel downloading
-- automated tests (e.g. using mocking or a local http-server)
+- more automated tests (e.g. using mocking or a local http-server)
 - support URLs that do not end with the file name
 - handling of already existing files and/or duplicated names (but different content)
 - proper packaging
