@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import codecs
+import contextlib
 import argparse
 import string
 import urllib2
@@ -9,24 +10,50 @@ import sys
 DEFAULT_ENCODING = 'utf-8'
 
 
+def http_url_filename_extract(http_url):
+    """ Extracts the file name from the url.
+    Requires the URL to contain the file name as last segment.
+    Therefore no query parameters are allowed.
+
+    :param http_url: URL as text string
+    :return: the file name extracted from the URL
+    """
+    return http_url.split('?')[0].rsplit('/', 1)[1]
+
+
+@contextlib.contextmanager  # adds 'with' context support
+def http_download(text_url):
+    """ Perform the download. Opens the URL and returns a stream object.
+    The returned stream must either be closed or used in a 'with' context.
+
+    :param text_url: URL as text string
+    :return: stream to payload data
+    """
+    response = urllib2.urlopen(text_url)
+    stat = response.getcode()
+    if stat != 200:
+        raise RuntimeError("Response status = %d" % stat)
+
+    yield response
+    response.close()
+
+
 class UrlDownloader(object):
     """ Class to download a file from a given URL.
     """
-    # Implemented as class for better extensibility.
-    # TODO: forbid non http-URLs
 
-    def _extract_filename(self, text_url):
-        """ Extracts the file name from the url.
-        Requires the URL to contain the file name as last segment.
-        Therefore no query parameters are allowed.
-
-        :param text_url: URL as text string
-        :return: the file name extracted from the URL
+    def __init__(self, filename_extractor, downloader):
+        """ Initialize the URL downloader of a given type
+        :param filename_extractor: callable file name extractor returning a
+                                   file name from the given URL
+        :param downloader: callable downloader returning a data stream from the
+                           given URL
         """
-        return text_url.split('?')[0].rsplit('/', 1)[1]
+        self._filename_extractor = filename_extractor
+        self._downloader = downloader
 
     def download(self, text_url):
-        """ Perform the download. Opens the URL, retrieves the response data
+        """ Perform the download. Opens the URL, retrieves the data
         and saves it to a file using a file name extracted from the URL.
         The file is saved to the current working directory.
 
@@ -34,15 +61,10 @@ class UrlDownloader(object):
         """
         print u'Downloading %s' % text_url
 
-        response = urllib2.urlopen(text_url)
-        stat = response.getcode()
-
-        if stat == 200:
-            filename = self._extract_filename(text_url)
-            with open(filename, 'wb') as f:
-                f.write(response.read())
-        else:
-            raise RuntimeError("Response status = %d" % stat)
+        filename = self._filename_extractor(text_url)
+        with self._downloader(text_url) as source_stream:
+            with open(filename, 'wb') as target_stream:
+                target_stream.write(source_stream.read())
 
 
 def main(files, encoding=DEFAULT_ENCODING):
@@ -53,7 +75,12 @@ def main(files, encoding=DEFAULT_ENCODING):
     :param encoding: Defines the encoding of the input files.
     :return: True if everything went fine, False otherwise.
     """
-    url_downloader = UrlDownloader()
+    # TODO: Add more downloaders for future supported protocols
+    # Currently only http supported.
+    url_downloader = UrlDownloader(
+        http_url_filename_extract,
+        http_download
+    )
 
     no_error = True
     for file_path in files:
